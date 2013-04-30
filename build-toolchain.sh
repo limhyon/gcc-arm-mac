@@ -35,7 +35,7 @@ umask 022
 
 exec < /dev/null
 
-script_path=`dirname $(readlink -f $0)`
+script_path=`cd $(dirname $0) && pwd -P`
 . $script_path/build-common.sh
 
 # This file contains the sequence of commands used to build the ARM EABI toolchain.
@@ -48,7 +48,7 @@ usage ()
 if [ $# -gt 2 ] ; then
     usage
 fi
-skip_mingw32=no
+skip_mingw32=yes
 DEBUG_BUILD_OPTIONS=no
 for ac_arg; do
     case $ac_arg in
@@ -95,7 +95,7 @@ else
     make -j$JOBS
 fi
 
-make htmldir=$INSTALLDIR_LINUX/share/doc/html pdfdir=$INSTALLDIR_LINUX/share/doc/pdf infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install install-html install-pdf
+make infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install
 restoreenv
 popd
 
@@ -132,20 +132,20 @@ $SRCDIR/$GCC/configure --build=$BUILD --host=$HOST_LINUX --target=$TARGET \
     --with-ppl=$BUILDDIR_LINUX/host-libs/usr \
     --with-cloog=$BUILDDIR_LINUX/host-libs/usr \
     --with-libelf=$BUILDDIR_LINUX/host-libs/usr \
-    "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" \
+    "--with-host-libstdcxx=-lstdc++" \
     "--with-pkgversion=$PKGVERSION" \
-    --with-extra-multilibs=armv6-m,armv7-m,armv7e-m,armv7-r
+    --with-extra-multilibs=armv6-m,armv7-m,armv7e-m
 
 make -j$JOBS all-gcc
 
-make htmldir=$INSTALLDIR_LINUX/share/doc/html pdfdir=$INSTALLDIR_LINUX/share/doc/pdf infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install-gcc
+make infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install-gcc
 
 popd
 
 pushd $INSTALLDIR_LINUX
 rm -rf bin/arm-none-eabi-gccbug
 rm -rf ./lib/libiberty.a
-rmdir include
+test -d include && rmdir include
 popd
 
 echo Task [III-2] /$HOST_LINUX/newlib/
@@ -166,23 +166,14 @@ $SRCDIR/$NEWLIB/configure --build=$BUILD \
 
 make -j$JOBS
 
-make htmldir=$INSTALLDIR_LINUX/share/doc/html pdfdir=$INSTALLDIR_LINUX/share/doc/pdf infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install
-
-make pdf
-mkdir -p $INSTALLDIR_LINUX/share/doc/pdf
-cp $BUILDDIR_LINUX/newlib/arm-none-eabi/newlib/libc/libc.pdf $INSTALLDIR_LINUX/share/doc/pdf/libc.pdf
-cp $BUILDDIR_LINUX/newlib/arm-none-eabi/newlib/libm/libm.pdf $INSTALLDIR_LINUX/share/doc/pdf/libm.pdf
-
-make html
-mkdir -p $INSTALLDIR_LINUX/share/doc/html
-copy_dir $BUILDDIR_LINUX/newlib/arm-none-eabi/newlib/libc/libc.html $INSTALLDIR_LINUX/share/doc/html/libc
-copy_dir $BUILDDIR_LINUX/newlib/arm-none-eabi/newlib/libm/libm.html $INSTALLDIR_LINUX/share/doc/html/libm
+make infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install
 
 popd
 restoreenv
 
 echo Task [III-3] /$HOST_LINUX/gcc-final/
 rm -f $INSTALLDIR_LINUX/arm-none-eabi/usr
+mkdir -p $INSTALLDIR_LINUX/arm-none-eabi
 ln -s . $INSTALLDIR_LINUX/arm-none-eabi/usr
 
 rm -rf $BUILDDIR_LINUX/gcc-final && mkdir -p $BUILDDIR_LINUX/gcc-final
@@ -214,9 +205,9 @@ $SRCDIR/$GCC/configure --build=$BUILD --host=$HOST_LINUX --target=$TARGET \
     --with-ppl=$BUILDDIR_LINUX/host-libs/usr \
     --with-cloog=$BUILDDIR_LINUX/host-libs/usr \
     --with-libelf=$BUILDDIR_LINUX/host-libs/usr \
-    "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" \
+    "--with-host-libstdcxx=-lstdc++" \
     "--with-pkgversion=$PKGVERSION" \
-    --with-extra-multilibs=armv6-m,armv7-m,armv7e-m,armv7-r
+    --with-extra-multilibs=armv6-m,armv7-m,armv7e-m
 
 if [ "x$DEBUG_BUILD_OPTIONS" != "xno" ] ; then
     make CFLAGS="$DEBUG_BUILD_OPTIONS" -j$JOBS
@@ -224,7 +215,7 @@ else
     make -j$JOBS
 fi
 
-make htmldir=$INSTALLDIR_LINUX/share/doc/html pdfdir=$INSTALLDIR_LINUX/share/doc/pdf infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install install-html install-pdf
+make htmldir=$INSTALLDIR_LINUX/share/doc/html pdfdir=$INSTALLDIR_LINUX/share/doc/pdf infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install
 
 pushd $INSTALLDIR_LINUX
 rm -rf bin/arm-none-eabi-gccbug
@@ -233,7 +224,7 @@ for libiberty_lib in $LIBIBERTY_LIBRARIES ; do
     rm -rf $libiberty_lib
 done
 rm -rf ./lib/libiberty.a
-rmdir include
+test -d include && rmdir include
 popd
 
 rm -f $INSTALLDIR_LINUX/arm-none-eabi/usr
@@ -263,7 +254,7 @@ else
     make -j$JOBS
 fi
 
-make htmldir=$INSTALLDIR_LINUX/share/doc/html pdfdir=$INSTALLDIR_LINUX/share/doc/pdf infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install install-html install-pdf
+make infodir=$INSTALLDIR_LINUX/share/doc/info mandir=$INSTALLDIR_LINUX/share/doc/man install
 restoreenv
 popd
 
@@ -322,8 +313,6 @@ cp $ROOT/$README_FILE $INSTALLDIR_LINUX/
 cp $ROOT/$LICENSE_FILE $INSTALLDIR_LINUX/
 ln -s $INSTALLDIR_LINUX $INSTALL_PACKAGE_NAME
 tar cjf $PACKAGEDIR/$PACKAGE_NAME.tar.bz2   \
-    --owner=0                               \
-    --group=0                               \
     --exclude=host-$HOST_LINUX              \
     --exclude=host-$HOST_MINGW              \
     $INSTALL_PACKAGE_NAME/arm-none-eabi     \
@@ -356,6 +345,11 @@ ln -s . $INSTALL_PACKAGE_NAME
 tar xf $PACKAGEDIR/$PACKAGE_NAME.tar.bz2 --bzip2
 rm $INSTALL_PACKAGE_NAME
 popd
+
+if [ `uname` == Darwin ]; then
+    # no need to repackage the sources
+    exit 0
+fi
 
 echo Task [IV-1] /$HOST_MINGW/binutils/
 prepend_path PATH $BUILDDIR_MINGW/tools-$OBJ_SUFFIX_LINUX/bin
@@ -439,7 +433,7 @@ $SRCDIR/$GCC/configure --build=$BUILD --host=$HOST_MINGW --target=$TARGET \
     --with-libelf=$BUILDDIR_MINGW/host-libs/usr \
     "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" \
     "--with-pkgversion=$PKGVERSION" \
-    --with-extra-multilibs=armv6-m,armv7-m,armv7e-m,armv7-r
+    --with-extra-multilibs=armv6-m,armv7-m,armv7e-m
 
 make -j$JOBS all-gcc
 

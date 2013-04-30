@@ -253,10 +253,9 @@ README_FILE=readme.txt
 LICENSE_FILE=license.txt
 GCC_VER=`cat $SRCDIR/$GCC/gcc/BASE-VER`
 GCC_VER_NAME=`echo $GCC_VER | cut -d'.' -f1,2 | sed -e 's/\./_/g'`
-JOBS=`grep ^processor /proc/cpuinfo|wc -l`
-
-BUILD=i686-linux-gnu
-HOST_LINUX=i686-linux-gnu
+JOBS=`sysctl -n hw.ncpu`
+BUILD=x86_64-apple-darwin10
+HOST_LINUX=x86_64-apple-darwin10
 HOST_MINGW=i586-mingw32
 HOST_MINGW_TOOL=i586-mingw32msvc
 TARGET=arm-none-eabi

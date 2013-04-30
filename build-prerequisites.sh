@@ -35,7 +35,7 @@ umask 022
 
 exec < /dev/null
 
-script_path=`dirname $(readlink -f $0)`
+script_path=`cd $(dirname $0) && pwd -P`
 . $script_path/build-common.sh
 
 # This file contains the sequence of commands used to build the prerequisites
@@ -49,7 +49,7 @@ usage ()
 if [ $# -gt 1 ] ; then
     usage
 fi
-skip_mingw32=no
+skip_mingw32=yes
 for ac_arg; do
     case $ac_arg in
         --skip_mingw32)
@@ -140,6 +140,7 @@ $SRCDIR/$PPL/configure --build=$BUILD \
     --host=$HOST_LINUX \
     --target=$TARGET \
     --prefix=$BUILDDIR_LINUX/host-libs/usr \
+    --enable-interfaces='c c++' \
     --disable-shared \
     --disable-nls \
     --with-gmp-prefix=$BUILDDIR_LINUX/host-libs/usr

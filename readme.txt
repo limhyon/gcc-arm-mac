@@ -1,24 +1,21 @@
 GNU Tools for ARM Embedded Processors
 
 Table of Contents
-* Installing executables on Linux
-* Installing executables on Windows 
+* Installing executables on OS X
 * Invoking GCC
 * Architecture options usage
 * C Libraries usage
 * Linker scripts
 * Startup code
 
-* Installing executables on Linux *
+* Installing executables on OS X *
 Unpack the tarball to the target directory, like this:
 $ cd target_dir && tar xjf gcc-arm-none-eabi-*-yyyymmdd.tar.bz2
 
-* Installing executables on Windows *
-Run the installer (gcc-arm-none-eabi-*-yyyymmdd.exe) and follow the
-instructions.
+Note that the HTML and PDF documentation is not included in this distribution.
 
 * Invoking GCC *
-On Linux, either invoke with the complete path like this:
+On OS X, either invoke with the complete path like this:
 $ target_dir/gcc-arm-none-eabi-*/bin/arm-none-eabi-gcc
 
 Or set path like this:
