@@ -8,6 +8,9 @@ Table of Contents
 * Linker scripts
 * Startup code
 
+* Unzip all files in src?
+find . -name '*.tar.*' | xargs -I% tar -xf %
+
 * Installing executables on OS X *
 Unpack the tarball to the target directory, like this:
 $ cd target_dir && tar xjf gcc-arm-none-eabi-*-yyyymmdd.tar.bz2

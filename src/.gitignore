@@ -1,0 +1,14 @@
+binutils
+cloog-ppl-0.15.11
+expat-2.0.1
+gcc
+gdb
+gmp-4.3.2
+installation
+libelf-0.8.13
+libiconv-1.11.1
+mpc-0.8.1
+mpfr-2.4.2
+newlib
+ppl-0.11
+zlib-1.2.5
